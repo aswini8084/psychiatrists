@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychiatrists by Hospital</title>
+</head>
+<body>
+    <h1>Psychiatrists by Hospital</h1>
+    <form id="hospitalForm">
+        <label for="hospitalId">Hospital ID:</label><br>
+        <input type="text" id="hospitalId" name="hospitalId" required><br><br>
+        
+        <button type="button" onclick="fetchPsychiatrists()">Fetch Psychiatrists</button>
+    </form>
+
+    <h2 id="hospitalName"></h2>
+    <p>Total Psychiatrists: <span id="totalPsychiatristsCount"></span></p>
+    <p>Total Patients: <span id="totalPatientsCount"></span></p>
+    
+    <h3>Psychiatrist Details</h3>
+    <ul id="psychiatristList"></ul>
+
+    <script>
+        async function fetchPsychiatrists() {
+            const form = document.getElementById('hospitalForm');
+            const formData = new FormData(form);
+            const data = { hospitalId: formData.get('hospitalId') };
+            
+            const response = await fetch('http://localhost:5000/api/psychiatrists/hospital', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            if (response.status === 200) {
+                document.getElementById('hospitalName').innerText = result.hospitalName;
+                document.getElementById('totalPsychiatristsCount').innerText = result.totalPsychiatristsCount;
+                document.getElementById('totalPatientsCount').innerText = result.totalPatientsCount;
+
+                const psychiatristList = document.getElementById('psychiatristList');
+                psychiatristList.innerHTML = '';
+                result.psychiatristDetails.forEach(psy => {
+                    const listItem = document.createElement('li');
+                    listItem.innerText = `ID: ${psy.id}, Name: ${psy.name}, Patients Count: ${psy.patientsCount}`;
+                    psychiatristList.appendChild(listItem);
+                });
+            } else {
+                alert(`Error: ${result.msg}`);
+            }
+        }
+    </script>
+</body>
+</html>
