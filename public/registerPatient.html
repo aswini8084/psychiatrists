@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration</title>
+</head>
+ <body>
+    <h1>Patient Registration</h1>
+    <form id="patientForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br>
+        
+        <label for="address">Address:</label><br>
+        <input type="text" id="address" name="address" required minlength="10"><br>
+        
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br>
+        
+        <label for="phone">Phone:</label><br>
+        <input type="text" id="phone" name="phone" required minlength="10"><br>
+        
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required ><br>
+        
+        <label for="photo">Photo:</label><br>
+        <input type="text" id="photo" name="photo" required><br>
+        
+        <label for="psychiatristId">Psychiatrist ID:</label><br>
+        <input type="text" id="psychiatristId" name="psychiatristId"><br><br>
+        
+        <button type="button" onclick="registerPatient()">Register</button>
+    </form>
+
+    <script>
+        async function registerPatient() {
+            const form = document.getElementById('patientForm');
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                address: formData.get('address'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                photo: formData.get('photo'),
+                psychiatristId: formData.get('psychiatristId')
+            };
+            
+            const response = await fetch('http://localhost:5000/api/patients/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            if (response.status === 201) {
+                alert('Patient registered successfully');
+            } else {
+                alert(`Error: ${result.msg}`);
+            }
+        }
+    </script>
+</body>
+</html>
